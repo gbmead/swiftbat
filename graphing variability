@@ -56,7 +56,6 @@ input_dict=dict(cleansnr=6,cleanexpr='ALWAYS_CLEAN==T')
 noise_map_dir=Path("/Users/bmead/data/bat/PATTERN_MAPS/")
 batsurvey_obs=ba.parallel.batsurvey_analysis(obs_ids, input_dict=input_dict, patt_noise_dir=noise_map_dir, nprocs=20)
 
-  
 #preview the snapshot pointing values of rate, snr, and the fitted flux and photon index
 batsurvey_obs=ba.parallel.batspectrum_analysis(batsurvey_obs, object_name, ul_pl_index=2.15, recalc=True,nprocs=14)
 fig, axes=ba.plot_survey_lc(batsurvey_obs, id_list=object_name, time_unit="UTC", values=["rate","snr", "flux", "PhoIndex", "exposure"], calc_lc=True)
@@ -65,13 +64,11 @@ fig, axes=ba.plot_survey_lc(batsurvey_obs, id_list=object_name, time_unit="UTC",
 #information should load as follows, outventory_file=Path("/bat/3C273data/mosaiced_surveyresults/grouped_outventory/")
 outventory_file=ba.merge_outventory(batsurvey_obs)
 
-
 #to define the time bins for which we will create mosaic images and analyze them, to test our code, we will use the same 1 month binning as the 22 month survey paper used
 #remember to adjust the "Time" to desired end time, no need to specify start time 
 time_bins=ba.group_outventory(outventory_file, np.timedelta64(1, "M"), end_datetime=Time("2009-10-27"), recalc=True)
 
 mosaic_list, total_mosaic=ba.parallel.batmosaic_analysis(batsurvey_obs, outventory_file, time_bins, nprocs=8)
-
 
 mosaic_list=ba.parallel.batspectrum_analysis(mosaic_list, object_name, ul_pl_index=2.15, nprocs=11)
 total_mosaic=ba.parallel.batspectrum_analysis(total_mosaic, object_name, ul_pl_index=2.15, use_cstat=False, nprocs=1)
@@ -86,7 +83,6 @@ weekly_mosaic_list, weekly_total_mosaic=ba.parallel.batmosaic_analysis(batsurvey
 weekly_mosaic_list=ba.parallel.batspectrum_analysis(weekly_mosaic_list, object_name, recalc=True, nprocs=11)
 weekly_total_mosaic=ba.parallel.batspectrum_analysis(weekly_total_mosaic, object_name, recalc=True, use_cstat=False, nprocs=1)
 
-
 #monthly mosaic (monthly averages) 
 outventory_file_monthly=ba.merge_outventory(batsurvey_obs, savedir=Path('./3C273data/monthly_mosaiced_surveyresults/', reload=True))
 time_bins_monthly=ba.group_outventory(outventory_file_monthly, np.timedelta64(1, "M"), start_datetime=Time("2008-10-27"), end_datetime=Time("2009-10-27"))
@@ -94,7 +90,6 @@ monthly_mosaic_list, monthly_total_mosaic=ba.parallel.batmosaic_analysis(batsurv
 
 monthly_mosaic_list=ba.parallel.batspectrum_analysis(monthly_mosaic_list, object_name, recalc=True, nprocs=11)
 monthly_total_mosaic=ba.parallel.batspectrum_analysis(monthly_total_mosaic, object_name, recalc=True, use_cstat=False, nprocs=1)
-
 
 #save our survey/mosaic results, here, begin to specify desired time unit (markian julian day, mjd here)  
 all_data=ba.concatenate_data(batsurvey_obs, object_name, ["mjd_time", "utc_time", "exposure", "rate","rate_err","snr", "flux", "PhoIndex"])
@@ -109,7 +104,6 @@ with open('monthly_mosaic_dictionary.pkl', 'wb') as f:
 all_data_weekly=ba.concatenate_data(weekly_mosaic_list, object_name, ["user_timebin/mjd_time", "user_timebin/utc_time", "user_timebin/mjd_stop_time", "user_timebin/utc_stop_time", "rate","rate_err","snr", "flux", "PhoIndex"])
 with open('weekly_mosaic_dictionary.pkl', 'wb') as f:
     pickle.dump(all_data_weekly, f)
-
 
 #create the main plot of your object in the manuscript, keeping consistent time unit 
 energy_range=None
